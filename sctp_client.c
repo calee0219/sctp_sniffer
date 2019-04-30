@@ -1,5 +1,13 @@
 #include "sniffer.h"
 
+#ifdef client
+int main() {
+    char buf[1024];
+    sniffer_client("127.0.0.1", buf);
+    return 0;
+}
+#endif
+
 int sniffer_client(char* ip_char, char* buf) {
     int client_fd = 0;
     const char* server_ip = NULL;
@@ -32,25 +40,28 @@ int sniffer_client(char* ip_char, char* buf) {
 
     printf("OK\n");
 
-    for (int i = 0; i < CLIENT_SEND_COUNT; ++i) {
-        printf("Sending message %d of %d. Result: ", i + 1, CLIENT_SEND_COUNT);
+    size_t i;
+    for (i = 0; i < CLIENT_SEND_COUNT; ++i) {
+        printf("Sending message %ld of %d. Result: ", i + 1, CLIENT_SEND_COUNT);
 
-        memset(buf, 0, sizeof(buf));
-        snprintf(buf, sizeof(buf) - 1, "DATA %d", i);
+        char buff[1024];
+        memcpy(buff, buf, sizeof(buff));
+        memset(buff, 0, sizeof(buff));
+        snprintf(buff, sizeof(buff) - 1, "DATA %ld", i);
 
-        if (send(client_fd, &buf, strlen(buf), 0) == -1) {
+        if (send(client_fd, &buff, strlen(buff), 0) == -1) {
             perror("send");
             return 6;
         }
 
-        memset(buf, 0, sizeof(buf));
+        memset(buff, 0, sizeof(buff));
 
-        if (recv(client_fd, &buf, sizeof(buf), 0) == -1) {
+        if (recv(client_fd, &buff, sizeof(buff), 0) == -1) {
             perror("recv");
             return 7;
         }
 
-        printf("%s\n", buf);
+        printf("%s\n", buff);
     }
 
     printf("Closing...\n");

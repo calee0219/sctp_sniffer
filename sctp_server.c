@@ -115,12 +115,14 @@ void* handle_connection(void* thread_data) {
 
         printf("Message received: %s\n", buf);
 
-        strncpy(buf, "OK", sizeof(buf) - 1);
+        sniffer_client("127.0.0.1", buf);
 
-        if (send(socket, &buf, strlen(buf), 0) == -1) {
-            perror("send");
-            return NULL;
-        }
+        //        strncpy(buf, "OK", sizeof(buf) - 1);
+        //
+        //        if (send(socket, &buf, strlen(buf), 0) == -1) {
+        //            perror("send");
+        //            return NULL;
+        //        }
     }
 }
 
